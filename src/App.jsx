@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Play, RotateCcw, GitBranch, Folder, FileText, Terminal, CheckCircle, ArrowRight, ArrowDown } from 'lucide-react';
+import { Play, RotateCcw, GitBranch, Folder, FileText, Terminal, CheckCircle, ArrowRight, ArrowDown, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const GitSubmodulesTutorial = () => {
+  const { t, i18n } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [animationState, setAnimationState] = useState('idle');
   const [showSubmodule, setShowSubmodule] = useState(false);
@@ -9,33 +11,11 @@ const GitSubmodulesTutorial = () => {
   const [mainRepoCommit, setMainRepoCommit] = useState('def456');
   const [showGitmodules, setShowGitmodules] = useState(false);
 
-  const steps = [
-    {
-      title: "Что такое Git Submodules?",
-      description: "Это способ включить один Git репозиторий внутрь другого как подпапку",
-      action: "start"
-    },
-    {
-      title: "Добавляем субмодуль",
-      description: "git submodule add <url> <путь>",
-      action: "add_submodule"
-    },
-    {
-      title: "Что создалось?",
-      description: "Появился файл .gitmodules и ссылка на коммит",
-      action: "show_files"
-    },
-    {
-      title: "Клонирование с субмодулями",
-      description: "git clone --recurse-submodules",
-      action: "clone_demo"
-    },
-    {
-      title: "Обновление субмодуля",
-      description: "Как получить новые изменения из субмодуля",
-      action: "update_submodule"
-    }
-  ];
+  const steps = t('steps', { returnObjects: true });
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
 
   const runAnimation = async (action) => {
     setAnimationState('running');
@@ -76,7 +56,7 @@ const GitSubmodulesTutorial = () => {
   };
 
   const nextStep = () => {
-    if (currentStep < steps.length - 1) {
+    if (Array.isArray(steps) && currentStep < steps.length - 1) {
       const newStep = currentStep + 1;
       setCurrentStep(newStep);
       runAnimation(steps[newStep].action);
@@ -114,7 +94,7 @@ const GitSubmodulesTutorial = () => {
         <span className="font-semibold">{name}</span>
         {isSubmodule && (
           <span className="ml-2 px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded">
-            submodule
+            {t('visualization.submodule_tag')}
           </span>
         )}
       </div>
@@ -142,12 +122,29 @@ const GitSubmodulesTutorial = () => {
         
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Git Submodules: Интерактивная обучалка
-          </h1>
-          <p className="text-gray-600">
-            Изучите, как работают субмодули на практических примерах
-          </p>
+          <div className="flex justify-between items-start mb-4">
+            <div></div> {/* Spacer */}
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                {t('header.title')}
+              </h1>
+              <p className="text-gray-600">
+                {t('header.subtitle')}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-gray-500" />
+              <select 
+                value={i18n.language} 
+                onChange={(e) => changeLanguage(e.target.value)}
+                className="text-sm border rounded px-2 py-1 bg-white"
+              >
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="en">🇺🇸 English</option>
+                <option value="uk">🇺🇦 Українська</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         {/* Controls */}
@@ -155,10 +152,10 @@ const GitSubmodulesTutorial = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-gray-800">
-                Шаг {currentStep + 1}: {steps[currentStep].title}
+                {t('controls.step')} {currentStep + 1}: {Array.isArray(steps) ? steps[currentStep]?.title : ''}
               </h2>
               <p className="text-gray-600 text-sm mt-1">
-                {steps[currentStep].description}
+                {Array.isArray(steps) ? steps[currentStep]?.description : ''}
               </p>
             </div>
             <div className="flex gap-3">
@@ -167,16 +164,16 @@ const GitSubmodulesTutorial = () => {
                 className="flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
-                Сброс
+                {t('controls.reset')}
               </button>
-              {currentStep < steps.length - 1 && (
+              {Array.isArray(steps) && currentStep < steps.length - 1 && (
                 <button
                   onClick={nextStep}
                   disabled={animationState === 'running'}
                   className="flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50"
                 >
                   <Play className="w-4 h-4 mr-2" />
-                  {animationState === 'running' ? 'Выполняется...' : 'Следующий шаг'}
+                  {animationState === 'running' ? t('controls.running') : t('controls.next_step')}
                 </button>
               )}
             </div>
@@ -186,7 +183,7 @@ const GitSubmodulesTutorial = () => {
           <div className="mt-4 bg-gray-200 rounded-full h-2">
             <div 
               className="bg-blue-500 h-2 rounded-full transition-all duration-500"
-              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+              style={{ width: `${Array.isArray(steps) ? ((currentStep + 1) / steps.length) * 100 : 0}%` }}
             />
           </div>
         </div>
@@ -224,10 +221,10 @@ const GitSubmodulesTutorial = () => {
             </div>
             
             <div className="mt-4 pt-3 border-t">
-              <div className="text-xs text-gray-500 mb-2">Последний коммит:</div>
+              <div className="text-xs text-gray-500 mb-2">{t('visualization.main_repo_commit_label')}</div>
               <CommitBox 
                 commit={mainRepoCommit} 
-                message="Update submodule reference"
+                message={t('visualization.main_repo_commit_message')}
                 active={true}
               />
             </div>
@@ -255,10 +252,10 @@ const GitSubmodulesTutorial = () => {
                 </div>
                 
                 <div className="mt-4 pt-3 border-t">
-                  <div className="text-xs text-gray-500 mb-2">Зафиксированный коммит:</div>
+                  <div className="text-xs text-gray-500 mb-2">{t('visualization.submodule_commit_label')}</div>
                   <CommitBox 
                     commit={submoduleCommit} 
-                    message="Add new feature"
+                    message={t('visualization.submodule_commit_message')}
                     active={true}
                   />
                 </div>
@@ -296,7 +293,7 @@ const GitSubmodulesTutorial = () => {
             <div className="absolute bottom-4 left-4 right-4 bg-gray-900 rounded-lg p-3 text-green-400 font-mono text-sm">
               <div className="flex items-center mb-1">
                 <Terminal className="w-4 h-4 mr-2" />
-                <span className="text-white">Terminal</span>
+                <span className="text-white">{t('visualization.terminal')}</span>
               </div>
               <div className="text-green-400">
                 $ {
@@ -322,51 +319,43 @@ const GitSubmodulesTutorial = () => {
           <div className="bg-white rounded-lg shadow-md p-4">
             <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
               <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-              Что происходит?
+              {t('panels.what_happens')}
             </h3>
             <div className="text-sm text-gray-600">
-              {currentStep === 0 && "Submodules позволяют включить один репозиторий в другой, сохраняя их независимость."}
-              {currentStep === 1 && "При добавлении субмодуля Git создает ссылку на конкретный коммит внешнего репозитория."}
-              {currentStep === 2 && "Файл .gitmodules содержит конфигурацию всех субмодулей проекта."}
-              {currentStep === 3 && "При клонировании с --recurse-submodules Git автоматически загружает все субмодули."}
-              {currentStep === 4 && "Обновление субмодуля получает новые изменения и обновляет ссылку в главном репозитории."}
+              {t(`explanations.what_happens_texts.${currentStep}`)}
             </div>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-4">
             <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
               <GitBranch className="w-5 h-5 text-blue-500 mr-2" />
-              Важно помнить!
+              {t('panels.important_to_remember')}
             </h3>
             <div className="text-sm text-gray-600">
-              {currentStep === 0 && "Субмодуль - это отдельный Git репозиторий внутри вашего проекта."}
-              {currentStep === 1 && "Субмодуль всегда привязан к конкретному коммиту, не к ветке!"}
-              {currentStep === 2 && "Без файла .gitmodules другие разработчики не смогут получить субмодули."}
-              {currentStep === 3 && "Обычное клонирование создаст пустые папки вместо субмодулей."}
-              {currentStep === 4 && "После обновления субмодуля нужно закоммитить изменения в главном репо."}
+              {t(`explanations.important_to_remember_texts.${currentStep}`)}
             </div>
           </div>
         </div>
 
         {/* Quick reference */}
         <div className="bg-gray-50 rounded-lg p-4 mt-6">
-          <h3 className="font-semibold text-gray-800 mb-3">Полезные команды:</h3>
+          <h3 className="font-semibold text-gray-800 mb-3">{t('panels.quick_reference')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <code className="bg-gray-200 px-2 py-1 rounded">git submodule add &lt;url&gt; &lt;path&gt;</code>
-              <p className="text-gray-600 mt-1">Добавить новый субмодуль</p>
+              <p className="text-gray-600 mt-1">{t('commands.add')}</p>
             </div>
             <div>
               <code className="bg-gray-200 px-2 py-1 rounded">git submodule update --init</code>
-              <p className="text-gray-600 mt-1">Инициализировать субмодули</p>
+              <p className="text-gray-600 mt-1">{t('commands.init')}</p>
             </div>
             <div>
               <code className="bg-gray-200 px-2 py-1 rounded">git submodule update --remote</code>
-              <p className="text-gray-600 mt-1">Обновить до последней версии</p>
+              <p className="text-gray-600 mt-1">{t('commands.update')}</p>
             </div>
             <div>
               <code className="bg-gray-200 px-2 py-1 rounded">git clone --recurse-submodules</code>
-              <p className="text-gray-600 mt-1">Клонировать с субмодулями</p>
+              <p className="text-gray-600 mt-1">{t('commands.clone')}</p>
             </div>
           </div>
         </div>

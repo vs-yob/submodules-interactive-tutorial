@@ -1,0 +1,69 @@
+{
+  "header": {
+    "title": "Git Submodules: Interactive Tutorial",
+    "subtitle": "Learn how submodules work with hands-on examples"
+  },
+  "steps": [
+    {
+      "title": "What are Git Submodules?",
+      "description": "A way to include one Git repository inside another as a subfolder"
+    },
+    {
+      "title": "Adding a Submodule",
+      "description": "git submodule add <url> <path>"
+    },
+    {
+      "title": "What Was Created?",
+      "description": "A .gitmodules file and a commit link appeared"
+    },
+    {
+      "title": "Cloning with Submodules",
+      "description": "git clone --recurse-submodules"
+    },
+    {
+      "title": "Updating a Submodule",
+      "description": "How to get new changes from a submodule"
+    }
+  ],
+  "controls": {
+    "step": "Step",
+    "reset": "Reset",
+    "running": "Running...",
+    "next_step": "Next step"
+  },
+  "visualization": {
+    "submodule_tag": "submodule",
+    "main_repo_commit_label": "Last commit:",
+    "main_repo_commit_message": "Update submodule reference",
+    "submodule_commit_label": "Tracked commit:",
+    "submodule_commit_message": "Add new feature",
+    "terminal": "Terminal"
+  },
+  "panels": {
+    "what_happens": "What's happening?",
+    "important_to_remember": "Important to remember!",
+    "quick_reference": "Useful commands:"
+  },
+  "explanations": {
+    "what_happens_texts": [
+      "Submodules allow you to include one repository within another while keeping them separate.",
+      "When adding a submodule, Git creates a link to a specific commit of the external repository.",
+      "The .gitmodules file contains the configuration for all project submodules.",
+      "When cloning with --recurse-submodules, Git automatically downloads all submodules.",
+      "Updating a submodule fetches new changes and updates the link in the main repository."
+    ],
+    "important_to_remember_texts": [
+      "A submodule is a separate Git repository within your project.",
+      "A submodule is always linked to a specific commit, not a branch!",
+      "Without the .gitmodules file, other developers won't be able to get the submodules.",
+      "A regular clone will create empty folders instead of submodules.",
+      "After updating a submodule, you need to commit the changes in the main repo."
+    ]
+  },
+  "commands": {
+    "add": "Add a new submodule",
+    "init": "Initialize submodules",
+    "update": "Update to the latest version",
+    "clone": "Clone with submodules"
+  }
+}
